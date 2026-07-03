@@ -207,6 +207,40 @@ td select { width: auto; padding: 6px 8px; font-size: 12px; border-radius: 8px; 
 /* ============ Icons ============ */
 svg.ic { flex-shrink: 0; vertical-align: -0.18em; display: inline-block; }
 
+/* ============ Character detail page ============ */
+.back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-4); min-height: 44px; padding: 0 4px; }
+.back-btn:hover { color: var(--text-1); }
+.char-hero { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.char-hero .portrait-lg { width: 96px; height: 96px; border-radius: 18px; background: var(--tint-soft); color: var(--olive); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+.char-hero .portrait-lg img { width: 100%; height: 100%; object-fit: cover; }
+.char-hero h2 { font-size: 24px; line-height: 30px; font-weight: 500; color: var(--text-1); }
+.char-hero .idline { font-size: 13px; color: var(--text-3); margin: 3px 0 8px; }
+.char-hero .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.steps { display: flex; overflow-x: auto; padding: 4px 0; }
+.step { flex: 1; min-width: 78px; display: flex; flex-direction: column; align-items: center; gap: 7px; position: relative; text-align: center; }
+.step::before { content: ""; position: absolute; top: 14px; left: -50%; width: 100%; height: 2px; background: #e5e7eb; }
+.step:first-child::before { display: none; }
+.step.done::before, .step.current::before { background: var(--lime); }
+.s-dot { width: 28px; height: 28px; border-radius: 9999px; background: #f3f4f6; color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; position: relative; z-index: 1; }
+.step.done .s-dot { background: var(--lime); color: var(--text-1); }
+.step.current .s-dot { background: var(--dark); color: #fff; }
+.s-label { font-size: 10px; line-height: 13px; color: var(--text-muted); max-width: 86px; }
+.step.current .s-label { color: var(--text-1); font-weight: 500; }
+.fact-list { display: flex; flex-direction: column; gap: 12px; }
+.fact { display: flex; flex-direction: column; gap: 3px; }
+.fact label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.fact div { font-size: 13px; color: var(--text-2); white-space: pre-wrap; }
+.fact div.empty { color: var(--text-faint); font-style: italic; }
+.mini-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.mini-art { background: #fafbfa; border: 1px solid #f0f2f0; border-radius: 12px; padding: 10px; cursor: pointer; }
+.mini-art:hover { background: var(--tint-soft); }
+.mini-art .t { font-size: 12px; font-weight: 500; color: var(--text-1); margin: 6px 0 4px; }
+.mini-art .thumb-sm { height: 52px; border-radius: 8px; background: var(--tint-soft); display: flex; align-items: center; justify-content: center; color: var(--olive); overflow: hidden; }
+.mini-art .thumb-sm img { width: 100%; height: 100%; object-fit: cover; }
+.content-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 13px; cursor: pointer; }
+.content-line:last-child { border-bottom: none; }
+.content-line:hover .t { text-decoration: underline; }
+
 /* ============ Server table extras ============ */
 .avatar-tile { width: 34px; height: 34px; border-radius: 10px; background: var(--tint-soft); color: var(--text-2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .srv-cell { display: flex; gap: 10px; align-items: center; }
@@ -321,6 +355,9 @@ tbody tr:hover td { background: #fafbfa; }
       </div>
       <div class="gallery" id="charGallery"></div>
     </section>
+
+    <!-- CHARACTER DETAIL -->
+    <section class="view" id="view-character"></section>
 
     <!-- CONTENT -->
     <section class="view" id="view-content">
@@ -623,9 +660,11 @@ const VIEWS = [
 ];
 function nav(v) { currentView = v; render(); }
 function renderNav() {
+  const activeTab = currentView === 'character' ? 'characters' : currentView;
   document.getElementById('navTabs').innerHTML = VIEWS.map(([v,, label]) =>
-    `<button class="tab ${v === currentView ? 'is-active' : ''}" onclick="nav('${v}')">${label}</button>`).join('');
+    `<button class="tab ${v === activeTab ? 'is-active' : ''}" onclick="nav('${v}')">${label}</button>`).join('');
   VIEWS.forEach(([v]) => document.getElementById('view-' + v).classList.toggle('on', v === currentView));
+  document.getElementById('view-character').classList.toggle('on', currentView === 'character');
 }
 
 /* ================= Stage advance (the core action) ================= */
@@ -809,7 +848,7 @@ function renderCharacters() {
   document.getElementById('charGallery').innerHTML = S.characters.map(c => {
     const arts = S.artworks.filter(a => a.characterId === c.id).length;
     const last = c.status === STAGES.character[STAGES.character.length - 1];
-    return `<div class="gcard" onclick="openForm('character','${c.id}')">
+    return `<div class="gcard" onclick="openCharacter('${c.id}')">
       <div class="portrait" style="color:var(--olive)">${c.image ? `<img src="${esc(c.image)}" alt="">` : ic('user', 36)}</div>
       <h4>${esc(c.name)}</h4>
       <p>${esc(c.identity || '')}</p>
@@ -821,6 +860,77 @@ function renderCharacters() {
       ${!last ? `<div style="margin-top:10px"><button class="adv" onclick="event.stopPropagation();advance('character','${c.id}')">Advance ›</button></div>` : ''}
     </div>`;
   }).join('') || '<div class="empty-note">No characters yet.</div>';
+}
+
+/* ================= Character detail page ================= */
+let currentCharId = null;
+function openCharacter(id) { currentCharId = id; currentView = 'character'; render(); }
+function renderCharacter() {
+  const c = byId(S.characters, currentCharId);
+  if (!c) { currentView = 'characters'; render(); return; }
+  const stages = STAGES.character;
+  const si = stages.indexOf(c.status);
+  const last = si === stages.length - 1;
+  const arts = S.artworks.filter(a => a.characterId === c.id);
+  const artIds = new Set(arts.map(a => a.id));
+  const posts = S.content.filter(x => x.characterId === c.id || artIds.has(x.artworkId));
+  const fact = (label, v, link) => `<div class="fact"><label>${label}</label><div class="${v ? '' : 'empty'}">${
+    v ? (link ? `<a href="${esc(/^https?:/.test(v) ? v : 'https://' + v)}" target="_blank" rel="noopener">${esc(v)}</a>` : esc(v)) : 'not set yet'}</div></div>`;
+
+  document.getElementById('view-character').innerHTML = `
+    <div><button class="back-btn" onclick="nav('characters')">‹ All characters</button></div>
+    <div class="card tint char-hero">
+      <div class="portrait-lg">${c.image ? `<img src="${esc(c.image)}" alt="">` : ic('user', 44)}</div>
+      <div>
+        <h2>${esc(c.name)}</h2>
+        <div class="idline">${esc(c.identity || 'No identity line yet')}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill ${c.status === 'audience-validated' ? 'lime' : 'dark'}">${esc(c.status)}</span>
+          <span class="pill ${c.signal === 'validated' ? 'lime' : c.signal === 'warm' ? 'soft' : 'grey'}">signal: ${esc(c.signal || 'weak')}</span>
+        </div>
+      </div>
+      <div class="actions">
+        ${!last ? `<button class="btn primary" onclick="advance('character','${c.id}')">Advance › ${esc(stages[si + 1] || '')}</button>` : ''}
+        <button class="btn ghost" onclick="openForm('character','${c.id}')">${ic('pencil', 13)} Edit</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">${ic('flag', 15)} Journey — drawing → playable → merch</div></div>
+      <div class="steps">${stages.map((st, i) =>
+        `<div class="step ${i < si ? 'done' : i === si ? 'current' : ''}"><span class="s-dot">${i < si ? '✓' : i + 1}</span><span class="s-label">${st}</span></div>`).join('')}</div>
+    </div>
+    <div class="home-grid">
+      <div class="card cream span-6">
+        <div class="card-head"><div class="card-title">${ic('user', 15)} Identity</div></div>
+        <div class="fact-list">
+          ${fact('Signature pose / motif', c.pose)}
+          ${fact('Outfit / gear (feeds merch + assets)', c.outfit)}
+          ${fact('Backstory', c.backstory)}
+          ${fact('Audience signal evidence', c.evidence, true)}
+          ${fact('Notes', c.notes)}
+        </div>
+      </div>
+      <div class="card span-6">
+        <div class="card-head">
+          <div class="card-title">${ic('image', 15)} Artworks (${arts.length})</div>
+          <button class="quick-btn" onclick="openForm('artwork', null, {characterId:'${c.id}', type:'original character', subject:'Rayet IP — ${esc(c.name)}'})">＋ For ${esc(c.name)}</button>
+        </div>
+        <div class="mini-grid">${arts.map(a => `
+          <div class="mini-art" onclick="openForm('artwork','${a.id}')">
+            <div class="thumb-sm">${a.image ? `<img src="${esc(a.image)}" alt="">` : ic('image', 20)}</div>
+            <div class="t">${esc(a.title)}</div>
+            <span class="pill ${a.status === 'finished' ? 'lime' : 'grey'}">${esc(a.status)}</span>
+          </div>`).join('') || '<span class="small muted">No artworks yet — she starts as a drawing.</span>'}
+        </div>
+        <div class="card-head" style="margin:18px 0 10px"><div class="card-title">${ic('calendar', 15)} Derived content (${posts.length})</div></div>
+        ${posts.slice(0, 8).map(p => `
+          <div class="content-line" onclick="openForm('content','${p.id}')">
+            <span class="t">${esc(p.title)}</span>
+            <span style="display:flex;gap:6px;flex-shrink:0"><span class="pill soft">${esc(p.platform)}</span><span class="pill ${p.status === 'posted' ? 'lime' : 'grey'}">${esc(p.status)}</span></span>
+          </div>`).join('') || '<span class="small muted">Nothing yet — content spawns from her finished artworks.</span>'}
+        ${posts.length > 8 ? `<div class="small muted" style="margin-top:8px">+ ${posts.length - 8} more in Content</div>` : ''}
+      </div>
+    </div>`;
 }
 
 function setContentView(v) { S.contentView = v; persist(); render(); }
@@ -1021,8 +1131,10 @@ const FORM_DEFS = {
       ['name', 'Name', 'text'], ['status', 'Stage', 'select', STAGES.character],
       ['identity', 'One-line identity', 'text', null, 'full'],
       ['pose', 'Signature pose / motif', 'text', null, 'full'],
+      ['outfit', 'Outfit / gear (feeds merch + assets)', 'text', null, 'full'],
       ['signal', 'Audience signal', 'select', ['weak', 'warm', 'validated']],
-      ['image', 'Portrait URL (optional)', 'text'],
+      ['evidence', 'Signal evidence link', 'text'],
+      ['image', 'Portrait URL (optional)', 'text', null, 'full'],
       ['backstory', 'Backstory', 'textarea', null, 'full'],
       ['notes', 'Notes', 'textarea', null, 'full'],
     ],
@@ -1073,10 +1185,12 @@ const FORM_DEFS = {
 };
 
 let formKind = null, formId = null;
-function openForm(kind, id) {
+function openForm(kind, id, prefill) {
   formKind = kind; formId = id || null;
   const def = FORM_DEFS[kind];
-  const r = id ? byId(def.list(), id) : { date: TODAY(), status: STAGES[kind] ? STAGES[kind][0] : undefined, priority: 'Medium', platform: kind === 'content' ? 'Instagram' : 'FiveM', type: 'canon reimagining', ttype: 'community w/ dev team', source: kind === 'revenue' ? 'commission' : '', signal: 'weak' };
+  const r = id ? byId(def.list(), id) : Object.assign(
+    { date: TODAY(), status: STAGES[kind] ? STAGES[kind][0] : undefined, priority: 'Medium', platform: kind === 'content' ? 'Instagram' : 'FiveM', type: 'canon reimagining', ttype: 'community w/ dev team', source: kind === 'revenue' ? 'commission' : '', signal: 'weak' },
+    prefill || {});
   const fieldHTML = def.fields.map(([k, label, type, opts, span]) => {
     const v = r[k] != null ? r[k] : '';
     let input;
@@ -1133,6 +1247,7 @@ function deleteRec() {
   const r = byId(list, formId);
   snapshotUndo(`Deleted ${r.title || r.name || def.title} — undo?`);
   list.splice(list.indexOf(r), 1);
+  if (formKind === 'character' && currentView === 'character' && formId === currentCharId) currentView = 'characters';
   persist(); closeModal(); render();
 }
 
@@ -1182,6 +1297,7 @@ function render() {
   if (currentView === 'home') renderHome();
   if (currentView === 'artworks') renderArtworks();
   if (currentView === 'characters') renderCharacters();
+  if (currentView === 'character') renderCharacter();
   if (currentView === 'content') renderContent();
   if (currentView === 'servers') renderServers();
   if (currentView === 'runway') renderRunway();
