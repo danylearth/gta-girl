@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Dashboard — Hello, Anna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="assets/images/logo-s.svg" alt="Logo" />
+      </div>
+      <nav class="side-nav">
+        <button class="icon-btn is-active" aria-label="Dashboard"><i class="fas">&#xf5fd;</i></button>
+        <button class="icon-btn" aria-label="Analytics"><i class="fas">&#xe473;</i></button>
+        <button class="icon-btn" aria-label="Goals"><i class="fas">&#xf140;</i></button>
+        <button class="icon-btn" aria-label="Sleep"><i class="fas">&#xf186;</i></button>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- Top navigation -->
+      <header class="topbar">
+        <nav class="nav-tabs">
+          <button class="tab is-active"><i class="fas">&#xf009;</i><span>Home</span></button>
+          <button class="tab"><i class="fas">&#xf06d;</i><span>Activities</span></button>
+          <button class="tab"><i class="fas">&#xf004;</i><span>Health status</span></button>
+          <button class="tab"><i class="far">&#xf133;</i><span>Training Planing</span></button>
+        </nav>
+        <div class="top-actions">
+          <div class="theme-toggle">
+            <button class="toggle-btn is-active" aria-label="Light mode"><i class="fas">&#xf185;</i></button>
+            <button class="toggle-btn" aria-label="Dark mode"><i class="fas">&#xf186;</i></button>
+          </div>
+          <button class="round-btn notif" aria-label="Notifications"><i class="fas">&#xf0f3;</i><span class="dot"></span></button>
+          <button class="profile">
+            <img class="avatar" src="assets/images/header-user-avatar.png" alt="Anna" />
+            <i class="fas chevron">&#xf078;</i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Greeting & actions -->
+      <div class="greeting">
+        <h1>Hello, Anna</h1>
+        <div class="greeting-actions">
+          <button class="round-btn solid" aria-label="Search"><i class="fas">&#xf002;</i></button>
+          <button class="pill-btn"><i class="far">&#xf133;</i><span>Calendar</span></button>
+          <button class="pill-btn"><i class="fas">&#xf4ad;</i><span>ChatBot Ai</span></button>
+        </div>
+      </div>
+
+      <!-- Dashboard grid -->
+      <div class="grid">
+
+        <!-- Left column -->
+        <div class="col">
+          <section class="card activities">
+            <div class="card-head">
+              <div class="card-title"><i class="fas">&#xf06d;</i><span>Activities</span></div>
+              <button class="more-btn on-tint" aria-label="More options"><i class="fas">&#xf141;</i></button>
+            </div>
+            <div class="alert-box">
+              <div class="alert-left"><i class="fas">&#xf005;</i><span>You're on a roll with your streak</span></div>
+              <button class="alert-close" aria-label="Dismiss"><i class="fas">&#xf00d;</i></button>
+            </div>
+            <div class="seg-tabs">
+              <button class="seg is-active">Week</button>
+              <button class="seg">Month</button>
+              <button class="seg">Year</button>
+              <button class="seg">All time</button>
+            </div>
+            <div class="week-stats">
+              <p class="ws-title">This week</p>
+              <div class="ws-row"><span class="ws-label">Last week</span><span class="ws-badge">3h 24m</span></div>
+            </div>
+            <div class="chart">
+              <div class="gridline dashed" style="top:0"></div>
+              <div class="gridline dashed" style="top:33%"></div>
+              <div class="gridline dashed" style="top:66%"></div>
+              <div class="gridline solid" style="bottom:20px"></div>
+              <span class="y-label" style="top:-6px">40</span>
+              <span class="y-label" style="top:28.3%">30</span>
+              <span class="y-label" style="bottom:14px">0</span>
+              <div class="days">
+                <div class="day"><span class="bar gray" style="height:48.6px"></span><span class="bar lime" style="height:32.4px"></span><span class="d-label">Sun</span></div>
+                <div class="day"><span class="bar gray" style="height:64.8px"></span><span class="bar lime" style="height:10.8px"></span><span class="d-label">Mon</span></div>
+                <div class="day"><span class="bar gray rounded" style="height:21.6px"></span><span class="d-label">Tue</span></div>
+                <div class="day"><span class="bar gray" style="height:43.2px"></span><span class="bar lime" style="height:27px"></span><span class="d-label today">Today</span></div>
+                <div class="day"><span class="bar gray" style="height:70.2px"></span><span class="bar lime" style="height:32.4px"></span><span class="d-label">Thu</span></div>
+                <div class="day"><span class="bar gray" style="height:54px"></span><span class="bar lime" style="height:21.6px"></span><span class="d-label">Fri</span></div>
+                <div class="day"><span class="d-label">Sat</span></div>
+              </div>
+            </div>
+            <div class="card-foot">
+              <p class="foot-text"><span class="muted">Today </span>1 activities/bike ride <i class="fas bike">&#xf84a;</i> 28,50 km</p>
+              <button class="more-btn on-tint" aria-label="More"><i class="fas">&#xf141;</i></button>
+            </div>
+          </section>
+
+          <section class="card sleep">
+            <div class="card-head">
+              <div class="card-title"><i class="fas dark-ic">&#xf186;</i><span>Sleep score</span></div>
+              <button class="more-btn" aria-label="More options"><i class="fas">&#xf141;</i></button>
+            </div>
+            <div class="sleep-graph">
+              <div class="sleep-stages">
+                <span>Awake</span><span>REM</span><span>Light</span><span>Deep</span>
+              </div>
+              <img src="assets/images/sleep-hypnogram.svg" alt="Sleep hypnogram" />
+            </div>
+            <div class="sleep-foot">
+              <span class="sf-item"><i class="fas">&#xf0e7;</i>Good</span>
+              <span class="sf-score">8,5</span>
+              <span class="sf-item time"><i class="far">&#xf017;</i>8h 20m</span>
+            </div>
+          </section>
+        </div>
+
+        <!-- Middle column -->
+        <div class="col">
+          <div class="row row-top">
+            <section class="card metric walk">
+              <div class="metric-head">
+                <div class="card-title sm"><i class="fas">&#xf554;</i><span>Walk</span></div>
+                <span class="expand"><i class="fas">&#xf178;</i></span>
+              </div>
+              <div class="walk-ring">
+                <img src="assets/images/walk-progress-ring.svg" alt="3986 steps progress" />
+              </div>
+            </section>
+            <section class="card metric heart">
+              <div class="metric-head">
+                <div class="card-title sm"><i class="fas">&#xf004;</i><span>Heart Rate</span></div>
+                <button class="dropdown">Hourly <i class="fas">&#xf078;</i></button>
+              </div>
+              <div class="hr-body">
+                <div class="hr-chart"><img src="assets/images/heart-rate-chart.svg" alt="Heart rate chart" /></div>
+                <div class="hr-times"><span>9.00PM</span><span>9.30PM</span><span>10.00PM</span><span>10.30PM</span><span>11.00PM</span></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="row row-mid">
+            <section class="card metric stress">
+              <div class="metric-head">
+                <div class="card-title sm"><i class="fas">&#xf4fb;</i><span>Stress</span></div>
+                <span class="expand"><i class="fas">&#xf178;</i></span>
+              </div>
+              <p class="big-value">35</p>
+            </section>
+            <section class="card metric water">
+              <div class="metric-head">
+                <div class="card-title sm"><i class="fas">&#xf043;</i><span>Water</span></div>
+                <span class="expand"><i class="fas">&#xf178;</i></span>
+              </div>
+              <div class="water-body">
+                <div class="water-bars">
+                  <span class="wb" style="height:32px"></span>
+                  <span class="wb" style="height:28px"></span>
+                  <span class="wb" style="height:24px"></span>
+                  <span class="wb" style="height:20px"></span>
+                  <span class="wb empty"></span><span class="wb empty"></span><span class="wb empty"></span><span class="wb empty"></span><span class="wb empty"></span>
+                </div>
+                <p class="water-amount">1.5<br />liters</p>
+              </div>
+            </section>
+          </div>
+
+          <section class="card calories">
+            <div class="card-head">
+              <div class="card-title"><i class="fas">&#xe0e3;</i><span>Calories Analysis</span></div>
+              <button class="show-all">Show all</button>
+            </div>
+            <div class="bmi">
+              <p class="bmi-label">BMI 24,0 (Normal)</p>
+              <div class="bmi-bar">
+                <span class="bmi-seg low"><em>18,5</em></span>
+                <span class="bmi-seg mid"><em>25,0</em></span>
+                <span class="bmi-seg high"><em>30,0</em></span>
+              </div>
+              <p class="bmi-formula">BMI: weight (kg)/height (m)&sup2;</p>
+            </div>
+            <div class="macros">
+              <div class="macro-row">
+                <span class="m-name">Protein</span>
+                <span class="m-avg">120.55 g<span class="muted"> Avg</span><br /><span class="muted">intake</span></span>
+                <span class="m-goal">160.55 Goal</span>
+                <span class="m-pct">43,5%</span>
+              </div>
+              <div class="macro-row">
+                <span class="m-name">Carbs</span>
+                <span class="m-avg">120.55 g<span class="muted"> Avg</span><br /><span class="muted">intake</span></span>
+                <span class="m-goal">209.00 Goal</span>
+                <span class="m-pct">43,5%</span>
+              </div>
+              <div class="macro-row">
+                <span class="m-name">Fat</span>
+                <span class="m-avg">120.55 g<span class="muted"> Avg</span><br /><span class="muted">intake</span></span>
+                <span class="m-goal">230.00 Goal</span>
+                <span class="m-pct">43,5%</span>
+              </div>
+              <div class="macro-row">
+                <span class="m-name">Calories</span>
+                <span class="m-avg">120.55 g<span class="muted"> Avg</span><br /><span class="muted">intake</span></span>
+                <span class="m-goal muted">180.00 Goal</span>
+                <span class="m-pct">43,5%</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right column: hero -->
+        <div class="col hero">
+          <img class="hero-img" src="assets/images/hero-athletic-woman.png" alt="Smiling athletic woman against a green wall" />
+          <div class="hero-gradient"></div>
+          <div class="hero-content">
+            <div class="glass-card">
+              <div class="run-left">
+                <div class="run-title"><i class="fas">&#xf70c;</i><span>Easy run</span><i class="fas chev">&#xf078;</i></div>
+                <p class="run-distance">06.50 <span>km</span></p>
+                <div class="run-map"><img src="assets/images/run-route-map.svg" alt="Run route" /></div>
+              </div>
+              <div class="run-divider"></div>
+              <div class="run-right">
+                <p class="run-date">Wednesday,<br />18 Nov</p>
+                <div class="run-metrics">
+                  <span class="rm"><i class="far">&#xf017;</i>45:00</span>
+                  <span class="rm"><i class="fas">&#xf3c5;</i>6.16 /km</span>
+                  <span class="rm"><i class="fas">&#xf004;</i>140 bpm</span>
+                  <span class="rm"><i class="fas">&#xf164;</i>Good</span>
+                </div>
+              </div>
+              <div class="mini-card">
+                <img src="assets/images/run-card-thumbnail.png" alt="Burn It Fast workout" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

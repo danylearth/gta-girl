@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The GTA Girl — Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ============ Tokens (shared with the fitness dashboard design system) ============ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --container-max: 1280px;
+  --bg: #e2efe7;
+  --card: #ffffff;
+  --tint: #c7dacb;
+  --tint-soft: #d9eadb;
+  --tint-track: #b5cbb9;
+  --cream: #f5f2ef;
+  --dark: #1c1d21;
+  --lime: #d7f576;
+  --orange: #ea6328;
+  --olive: #9ca495;
+  --red: #ef4444;
+  --chip-blue: #eff6ff;
+  --text-1: #1a1a1a;
+  --text-2: #1f2937;
+  --text-3: #374151;
+  --text-4: #4b5563;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+  --shadow-sm: 0 1px 1px rgba(0,0,0,0.05);
+  --radius-card: 24px;
+}
+body {
+  font-family: "Inter", -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-2);
+  min-height: 100vh;
+  padding: 32px;
+  font-size: 14px;
+}
+button { font-family: inherit; font-size: inherit; border: none; background: none; cursor: pointer; color: inherit; }
+input, select, textarea { font-family: inherit; font-size: 14px; color: var(--text-2); border: 1px solid #e5e7eb; border-radius: 10px; padding: 9px 12px; background: #fff; width: 100%; }
+textarea { min-height: 64px; resize: vertical; }
+a { color: var(--text-3); }
+
+.app { display: flex; gap: 24px; max-width: var(--container-max); margin: 0 auto; }
+
+/* ============ Main / topbar ============ */
+.logo { width: 44px; height: 44px; flex-shrink: 0; background: var(--dark); color: var(--lime); border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; letter-spacing: -0.5px; margin-left: 4px; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border-radius: 9999px; background: rgba(255,255,255,0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); flex-wrap: wrap; }
+.nav-tabs { display: flex; gap: 4px; padding: 4px; border-radius: 9999px; background: rgba(255,255,255,0.5); flex-wrap: wrap; }
+.tab { padding: 10px 18px; border-radius: 9999px; font-size: 14px; color: var(--text-3); white-space: nowrap; min-height: 44px; }
+.tab.is-active { background: var(--dark); color: #fff; }
+.top-actions { display: flex; align-items: center; gap: 8px; padding-right: 4px; }
+.round-btn { min-width: 44px; height: 44px; padding: 0 14px; border-radius: 9999px; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--text-4); white-space: nowrap; }
+.round-btn.dark { background: var(--dark); color: #fff; }
+
+.greeting { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.greeting h1 { font-size: 28px; line-height: 34px; font-weight: 400; color: var(--text-2); }
+.greeting .sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+/* ============ Cards & shared bits ============ */
+.card { background: var(--card); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: 20px; }
+.card.tint { background: var(--tint); }
+.card.cream { background: var(--cream); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--text-1); display: flex; align-items: center; gap: 8px; }
+.pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 9999px; font-size: 11px; line-height: 16px; white-space: nowrap; }
+.pill.dark { background: var(--dark); color: #fff; }
+.pill.lime { background: var(--lime); color: var(--text-1); }
+.pill.soft { background: var(--tint-soft); color: var(--text-3); }
+.pill.orange { background: var(--orange); color: #fff; }
+.pill.grey { background: #f3f4f6; color: var(--text-4); }
+.pill.blue { background: var(--chip-blue); color: var(--text-2); }
+.pill.red { background: #fee2e2; color: #b91c1c; }
+.muted { color: var(--text-muted); }
+.small { font-size: 12px; }
+
+/* ============ Home ============ */
+.home-grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 20px; }
+.span-12 { grid-column: span 12; } .span-8 { grid-column: span 8; } .span-6 { grid-column: span 6; } .span-4 { grid-column: span 4; } .span-3 { grid-column: span 3; }
+
+.countdown-card { display: flex; flex-direction: column; gap: 14px; }
+.count-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.count-big { font-size: 52px; line-height: 1; letter-spacing: -1.5px; color: var(--text-1); font-weight: 500; }
+.count-big span { font-size: 15px; letter-spacing: 0; font-weight: 400; color: var(--text-3); }
+.phase-bar { display: flex; height: 8px; border-radius: 9999px; overflow: visible; position: relative; margin-top: 22px; }
+.phase-seg { position: relative; height: 100%; }
+.phase-seg em { position: absolute; left: 0; top: -18px; font-style: normal; font-size: 10px; color: var(--text-4); white-space: nowrap; }
+.phase-seg:first-child { border-radius: 9999px 0 0 9999px; }
+.phase-seg:last-child { border-radius: 0 9999px 9999px 0; }
+.today-marker { position: absolute; top: -5px; width: 2px; height: 18px; background: var(--dark); border-radius: 2px; }
+.today-marker::after { content: "today"; position: absolute; top: 19px; left: -14px; font-size: 9px; color: var(--text-2); }
+
+.kpi-row { display: flex; gap: 20px; }
+.kpi { flex: 1; min-width: 0; background: var(--card); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.kpi .k-label { font-size: 12px; color: var(--text-muted); }
+.kpi .k-value { font-size: 26px; line-height: 32px; color: var(--text-1); }
+.kpi .k-sub { font-size: 11px; color: var(--text-faint); }
+
+.attn-list, .week-list { display: flex; flex-direction: column; gap: 8px; }
+.attn-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255,255,255,0.55); border-radius: 12px; padding: 10px 12px; font-size: 13px; }
+.attn-item .go { min-height: 32px; padding: 4px 12px; border-radius: 9999px; background: var(--dark); color: #fff; font-size: 12px; flex-shrink: 0; }
+.attn-item.hot { background: var(--lime); }
+.empty-note { font-size: 13px; color: var(--text-muted); padding: 6px 2px; }
+
+.quick-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.quick-btn { min-height: 44px; padding: 10px 16px; border-radius: 9999px; background: var(--card); box-shadow: var(--shadow-sm); font-size: 14px; color: var(--text-3); }
+.quick-btn:hover { background: var(--tint-soft); }
+
+/* ============ Boards ============ */
+.board { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+.bcol { flex: 1; min-width: 200px; background: rgba(255,255,255,0.45); border-radius: 18px; padding: 10px; }
+.bcol h3 { font-size: 12px; font-weight: 500; color: var(--text-4); padding: 4px 6px 10px; display: flex; justify-content: space-between; }
+.bcol h3 .cnt { color: var(--text-faint); }
+.bcard { background: var(--card); border-radius: 14px; box-shadow: var(--shadow-sm); padding: 12px; margin-bottom: 10px; cursor: pointer; }
+.bcard .t { font-size: 13px; font-weight: 500; color: var(--text-1); margin-bottom: 6px; }
+.bcard .m { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.bcard .days { font-size: 11px; color: var(--text-faint); }
+.bcard .thumb { width: 100%; height: 64px; border-radius: 10px; background: var(--tint-soft); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px; overflow: hidden; }
+.bcard .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bcard-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.adv { min-width: 44px; min-height: 32px; padding: 4px 12px; border-radius: 9999px; background: var(--tint-soft); color: var(--text-2); font-size: 12px; font-weight: 500; }
+.adv:hover { background: var(--lime); }
+
+/* ============ Tables ============ */
+.tablewrap { background: var(--card); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); overflow: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #f0f2f0; vertical-align: top; font-size: 13px; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); font-weight: 500; position: sticky; top: 0; background: var(--card); }
+tr:last-child td { border-bottom: none; }
+td select { width: auto; padding: 6px 8px; font-size: 12px; border-radius: 8px; }
+.rowlink { font-weight: 500; color: var(--text-1); cursor: pointer; }
+
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar input[type=text] { flex: 1; min-width: 160px; border-radius: 9999px; }
+.toolbar select { width: auto; border-radius: 9999px; }
+.seg-toggle { display: flex; padding: 4px; border-radius: 9999px; background: rgba(255,255,255,0.5); }
+.seg-toggle button { padding: 8px 16px; border-radius: 9999px; font-size: 13px; color: var(--text-4); min-height: 40px; }
+.seg-toggle button.on { background: var(--dark); color: #fff; }
+
+/* ============ Gallery (characters) ============ */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 16px; }
+.gcard { background: var(--card); border-radius: 18px; box-shadow: var(--shadow-sm); padding: 14px; cursor: pointer; }
+.gcard .portrait { height: 120px; border-radius: 12px; background: var(--tint); display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; overflow: hidden; }
+.gcard .portrait img { width: 100%; height: 100%; object-fit: cover; }
+.gcard h4 { font-size: 14px; font-weight: 500; color: var(--text-1); margin-bottom: 4px; }
+.gcard p { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+
+/* ============ Calendar ============ */
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
+.cal-grid .dow { font-size: 10px; text-transform: uppercase; color: var(--text-faint); padding: 2px 6px; }
+.cal-cell { min-height: 74px; background: rgba(255,255,255,0.55); border-radius: 10px; padding: 6px; font-size: 11px; }
+.cal-cell.other { opacity: 0.35; }
+.cal-cell .dnum { color: var(--text-muted); margin-bottom: 4px; }
+.cal-cell.today .dnum { background: var(--dark); color: #fff; border-radius: 9999px; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.cal-item { background: var(--tint-soft); border-radius: 6px; padding: 2px 5px; margin-bottom: 3px; cursor: pointer; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cal-item.posted { background: var(--lime); }
+
+/* ============ Runway ============ */
+.phase-card { margin-bottom: 16px; }
+.phase-card .ph-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.ms-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.ms-row:last-child { border-bottom: none; }
+.ms-check { width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid var(--olive); background: #fff; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; padding: 0; }
+.ms-check.done { background: var(--lime); border-color: var(--lime); }
+.ms-row .due { margin-left: auto; font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+.ms-row .due.overdue { color: var(--orange); font-weight: 500; }
+.progress { height: 6px; border-radius: 9999px; background: #f3f4f6; overflow: hidden; flex: 1; max-width: 180px; }
+.progress i { display: block; height: 100%; background: var(--lime); border-radius: 9999px; }
+
+/* ============ Modal / toast ============ */
+.overlay { position: fixed; inset: 0; background: rgba(28,29,33,0.45); display: none; align-items: flex-start; justify-content: center; padding: 30px 16px; overflow: auto; z-index: 40; }
+.overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 20px; width: 100%; max-width: 620px; padding: 24px; }
+.modal h2 { font-size: 17px; font-weight: 500; margin-bottom: 16px; color: var(--text-1); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 8px; }
+.modal-actions .right { display: flex; gap: 8px; margin-left: auto; }
+.btn { min-height: 44px; padding: 10px 18px; border-radius: 9999px; font-size: 14px; }
+.btn.primary { background: var(--dark); color: #fff; }
+.btn.ghost { background: #f3f4f6; color: var(--text-3); }
+.btn.danger { background: #fee2e2; color: #b91c1c; }
+.linked { margin-top: 14px; border-top: 1px solid #f0f2f0; padding-top: 12px; }
+.linked h5 { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.linked .lk { display: inline-block; background: var(--tint-soft); border-radius: 9999px; padding: 4px 12px; margin: 0 6px 6px 0; font-size: 12px; cursor: pointer; }
+
+#toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: var(--dark); color: #fff; border-radius: 9999px; padding: 12px 20px; font-size: 13px; display: none; align-items: center; gap: 14px; z-index: 60; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); max-width: calc(100vw - 32px); }
+#toast.show { display: flex; }
+#toast button { color: var(--lime); font-weight: 600; min-height: 32px; }
+
+.checklist li { list-style: none; display: flex; gap: 10px; padding: 7px 0; font-size: 13px; color: var(--text-3); }
+.checklist li b { color: var(--text-1); font-weight: 600; }
+.checklist .num { width: 22px; height: 22px; border-radius: 9999px; background: var(--lime); color: var(--text-1); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.view { display: none; flex-direction: column; gap: 20px; }
+.view.on { display: flex; }
+
+/* ============ Icons ============ */
+svg.ic { flex-shrink: 0; vertical-align: -0.18em; display: inline-block; }
+
+/* ============ Server table extras ============ */
+.avatar-tile { width: 34px; height: 34px; border-radius: 10px; background: var(--tint-soft); color: var(--text-2); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.srv-cell { display: flex; gap: 10px; align-items: center; }
+.linkchips { display: flex; gap: 4px; flex-wrap: wrap; }
+.lchip { width: 28px; height: 28px; border-radius: 9999px; background: #f3f4f6; display: inline-flex; align-items: center; justify-content: center; color: var(--text-4); text-decoration: none; }
+a.lchip:hover { background: var(--tint-soft); color: var(--text-1); }
+.lchip.verify { width: auto; padding: 0 9px; background: #fff7ed; color: #b45309; font-size: 10px; font-style: italic; }
+.iconbtn-sm { width: 32px; height: 32px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-faint); }
+.iconbtn-sm:hover { background: #f3f4f6; color: var(--text-2); }
+.due-line { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
+.due-line.overdue { color: var(--orange); font-weight: 500; }
+.stage-days { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+tbody tr:hover td { background: #fafbfa; }
+
+/* ============ Responsive ============ */
+@media (max-width: 1119px) {
+  .home-grid .span-8, .home-grid .span-6, .home-grid .span-4, .home-grid .span-3 { grid-column: span 12; }
+  .kpi-row { flex-wrap: wrap; }
+  .kpi { min-width: 150px; flex: 1 1 40%; }
+}
+@media (max-width: 767px) {
+  body { padding: 14px; }
+  .count-big { font-size: 40px; }
+  .board { gap: 10px; }
+  .bcol { min-width: 180px; }
+  .cal-cell { min-height: 54px; }
+  .modal { padding: 18px; }
+  .grid2 { grid-template-columns: 1fr; }
+  /* touch targets ≥44px on phones (brief §11 a11y) */
+  .adv { min-height: 44px; padding: 8px 16px; }
+  .ms-check { width: 44px; height: 44px; border-radius: 12px; }
+  .attn-item .go { min-height: 44px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <div class="logo">GG</div>
+      <nav class="nav-tabs" id="navTabs"></nav>
+      <div class="top-actions">
+        <button class="round-btn dark" onclick="openQuickAdd()">+ Add</button>
+        <button class="round-btn" onclick="exportJSON()" title="Export all data as JSON">Export</button>
+        <button class="round-btn" onclick="document.getElementById('importFile').click()" title="Import JSON">Import</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)" />
+      </div>
+    </header>
+
+    <div class="greeting">
+      <div>
+        <h1 id="greetTitle">Hello, Ravni</h1>
+        <div class="sub" id="greetSub"></div>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <section class="view" id="view-home">
+      <div class="home-grid">
+        <div class="card tint countdown-card span-8">
+          <div class="card-head" style="margin-bottom:0">
+            <div class="card-title"><i data-ic="timer"></i> GTA 6 launch — 19 Nov 2026</div>
+            <span class="pill dark" id="phasePill"></span>
+          </div>
+          <div class="count-row">
+            <div class="count-big" id="daysLeft"></div>
+            <div class="small" id="nextMilestone"></div>
+          </div>
+          <div class="phase-bar" id="phaseBar"></div>
+        </div>
+        <div class="card cream span-4">
+          <div class="card-head"><div class="card-title"><i data-ic="clock"></i> Cfx review clock</div></div>
+          <div id="cfxClock"></div>
+        </div>
+
+        <div class="span-12 kpi-row" id="kpiRow"></div>
+
+        <div class="card tint span-6">
+          <div class="card-head"><div class="card-title"><i data-ic="zap"></i> Needs attention</div></div>
+          <div class="attn-list" id="attnList"></div>
+        </div>
+        <div class="card span-6">
+          <div class="card-head"><div class="card-title"><i data-ic="pin"></i> This week</div><span class="pill grey" id="weekCount"></span></div>
+          <div class="week-list" id="weekList"></div>
+        </div>
+
+        <div class="span-12">
+          <div class="quick-row" id="quickRow"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARTWORKS -->
+    <section class="view" id="view-artworks">
+      <div class="toolbar">
+        <input type="text" id="artSearch" placeholder="Search artworks…" oninput="render()" />
+        <select id="artType" onchange="render()">
+          <option value="">All types</option>
+          <option>canon reimagining</option><option>original character</option><option>other</option>
+        </select>
+        <button class="quick-btn" onclick="openForm('artwork')">+ Artwork</button>
+      </div>
+      <div class="board" id="artBoard"></div>
+    </section>
+
+    <!-- CHARACTERS -->
+    <section class="view" id="view-characters">
+      <div class="toolbar">
+        <span class="small muted">Rayet IP only — canon subjects live in Artworks.</span>
+        <span style="flex:1"></span>
+        <button class="quick-btn" onclick="openForm('character')">+ Character</button>
+      </div>
+      <div class="gallery" id="charGallery"></div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="view" id="view-content">
+      <div class="toolbar">
+        <div class="seg-toggle">
+          <button id="cvBoard" class="on" onclick="setContentView('board')">Board</button>
+          <button id="cvCal" onclick="setContentView('calendar')">Calendar</button>
+        </div>
+        <select id="contentPlatform" onchange="render()">
+          <option value="">All platforms</option>
+          <option>Instagram</option><option>YouTube Shorts</option><option>TikTok</option><option>X</option>
+        </select>
+        <span style="flex:1"></span>
+        <button class="quick-btn" onclick="openForm('content')">+ Post</button>
+      </div>
+      <div class="board" id="contentBoard"></div>
+      <div class="card" id="contentCal" style="display:none">
+        <div class="cal-head">
+          <button class="quick-btn" onclick="calShift(-1)">‹</button>
+          <div class="card-title" id="calTitle"></div>
+          <button class="quick-btn" onclick="calShift(1)">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </section>
+
+    <!-- SERVERS -->
+    <section class="view" id="view-servers">
+      <div class="toolbar">
+        <div class="seg-toggle">
+          <button id="svBoard" onclick="setServerView('board')">Board</button>
+          <button id="svTable" class="on" onclick="setServerView('table')">Table</button>
+        </div>
+        <input type="text" id="srvSearch" placeholder="Search servers, people…" oninput="render()" />
+        <select id="srvPriority" onchange="render()">
+          <option value="">All priorities</option>
+          <option>High</option><option>Med-High</option><option>Medium</option><option>Low-Med</option><option>Low</option>
+        </select>
+        <button class="quick-btn" onclick="openForm('server')">+ Server</button>
+      </div>
+      <div class="board" id="srvBoard" style="display:none"></div>
+      <div class="tablewrap" id="srvTableWrap">
+        <table>
+          <thead><tr><th>Server</th><th>Priority</th><th>Approach</th><th>Links</th><th>Stage</th><th>Next action</th><th></th></tr></thead>
+          <tbody id="srvTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RUNWAY -->
+    <section class="view" id="view-runway">
+      <div id="runwayPhases"></div>
+    </section>
+
+    <!-- SNAPSHOTS -->
+    <section class="view" id="view-snapshots">
+      <div class="home-grid">
+        <div class="card span-6">
+          <div class="card-head">
+            <div class="card-title"><i data-ic="chart"></i> Weekly snapshots</div>
+            <button class="quick-btn" onclick="openForm('snapshot')">+ Snapshot</button>
+          </div>
+          <div class="tablewrap" style="box-shadow:none">
+            <table style="min-width:0">
+              <thead><tr><th>Date</th><th>IG</th><th>X</th><th>TikTok</th><th>YT</th><th>Rev MTD</th></tr></thead>
+              <tbody id="snapTbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card span-6">
+          <div class="card-head">
+            <div class="card-title"><i data-ic="banknote"></i> Revenue log</div>
+            <button class="quick-btn" onclick="openForm('revenue')">+ Revenue</button>
+          </div>
+          <div class="tablewrap" style="box-shadow:none">
+            <table style="min-width:0">
+              <thead><tr><th>Date</th><th>Source</th><th>What</th><th style="text-align:right">Amount</th></tr></thead>
+              <tbody id="revTbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card cream span-12">
+          <div class="card-head"><div class="card-title"><i data-ic="sliders"></i> Settings</div></div>
+          <div class="grid2" style="max-width:560px">
+            <div class="field"><label>Posts / week target</label><input type="number" id="setTarget" onchange="saveSetting('postTarget', +this.value)" /></div>
+            <div class="field"><label>Cfx application submitted on</label><input type="date" id="setCfx" onchange="saveSetting('cfxSubmitted', this.value || null)" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+<div id="toast"><span id="toastMsg"></span><button id="toastUndo" onclick="undo()">Undo</button></div>
+
+<script>
+/* ================= Icons (inline SVG, Lucide-style strokes) ================= */
+const ICONS = {
+  home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  server: '<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  chart: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+  zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M5 3 3 5M19 3l2 2"/>',
+  pin: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  banknote: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  star: '<path d="m12 3 2.1 6.5H21l-5.4 3.9 2 6.6-5.6-4-5.6 4 2-6.6L3 9.5h6.9z"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20z"/>',
+  chat: '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z"/>',
+  instagram: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>',
+  xlogo: '<path d="m4 4 16 16M20 4 4 20"/>',
+  sliders: '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+  alert: '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',
+  pencil: '<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+};
+function ic(name, size = 15) {
+  return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+}
+document.querySelectorAll('i[data-ic]').forEach(el => { el.outerHTML = ic(el.dataset.ic, 15); });
+
+/* ================= Constants ================= */
+const KEY = 'gta_girl_cc_v1';
+const TODAY = () => new Date().toISOString().slice(0, 10);
+const LAUNCH = '2026-11-19';
+const STUCK_DAYS = 7;
+
+const STAGES = {
+  artwork:   ['idea', 'sketching', 'in progress', 'finished'],
+  character: ['concept', 'revealed', 'audience-validated', 'named/introduced', '3D model', 'playable', 'merch'],
+  content:   ['idea', 'drafted', 'scheduled', 'posted'],
+  server:    ['not started', 'researching', 'warming up', 'contacted', 'in talks', 'won', 'passed'],
+};
+const PLATFORMS = ['Instagram', 'YouTube Shorts', 'TikTok', 'X'];
+const FORMATS = ['WIP','Timelapse/Speedpaint','Reveal/Final','Before-After','Detail crop','Talking-head/Story','Tutorial/Tip','Drop/Launch','Meme/Trend','Reaction/Duet','Poll/Question','Other'];
+const VERDICTS = ['', 'works', 'mixed', 'flops', 'too early'];
+const REV_SOURCES = ['commission','asset sale','Shorts','merch','giveaway','other'];
+
+/* One artwork → many posts (Content-Strategy_v1) */
+const SPAWN_STUBS = [
+  ['Concept tease', 'WIP'], ['Work-in-progress still', 'WIP'], ['Process timelapse', 'Timelapse/Speedpaint'],
+  ['Detail crop', 'Detail crop'], ['The reveal', 'Reveal/Final'], ['Before/after', 'Before-After'],
+  ['The "why"', 'Talking-head/Story'], ['The 3D turn', 'Timelapse/Speedpaint'], ['In-context mockup', 'Reveal/Final'],
+  ['Reaction / engagement', 'Reaction/Duet'], ['The remix / variant', 'Reveal/Final'], ['The lesson', 'Tutorial/Tip'],
+];
+
+/* Origin-story beats (Virality-and-Narrative-Playbook_v1) */
+const ORIGIN_BEATS = [
+  ['Gratitude hook', '"You’re all here because of this art. Thank you, this is wild."'],
+  ['The intro', '"Let me introduce myself. This is the actual girl."'],
+  ['The garage', 'Physically go get the original childhood drawing.'],
+  ['The sketchbook', 'The old "cheat book" — proof it goes back.'],
+  ['The Vice City clip', '"This was the girl. I was obsessed with her."'],
+  ['The why', '"She shaped my whole style."'],
+  ['The arc', '"I went to uni for this. My whole career is this."'],
+  ['The now', '"GTA 6 is coming and I’m so excited. Who else is?"'],
+];
+
+const PHASES = [
+  { n: 1, name: 'Foundation & proof', from: '2026-07-01', to: '2026-08-31', color: '#d7f576' },
+  { n: 2, name: 'Build & outreach',   from: '2026-09-01', to: '2026-09-30', color: '#ffffff' },
+  { n: 3, name: 'Lock deals & stock up', from: '2026-10-01', to: '2026-10-31', color: '#ea6328' },
+  { n: 4, name: 'Launch amplification', from: '2026-11-01', to: '2026-11-19', color: '#1c1d21' },
+];
+
+/* Touchpoints from the original Server-CRM (restored — dropped in the first migration) */
+const TOUCHPOINTS = {
+  'NoPixel': { website: 'nopixel.net', x: '@itskoil', instagram: '', discord: 'Yes (large)' },
+  'Grizzley World RP': { website: 'grizzleyworld.com', x: '@TeeGrizzley', instagram: '@grizzleyganggaming', discord: 'Yes' },
+  'Living Legends RP': { website: 'livinglegendsrp.com', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'Prodigy RP': { website: 'prodigyrp.net', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'New Day RP': { website: 'newdayrp.com', x: '@NewDayRolePlay', instagram: 'verify', discord: 'Yes' },
+  'ONX RP': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'Lucid City RP': { website: 'lucidcityrp.com', x: '@OfficialLucidRP', instagram: 'linktr.ee/lucidcity.rp', discord: 'discord.gg/lucidcity' },
+  'Ignite RP': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'CityLife RP': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'Drill UK RP': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'Eclipse RP': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+  'GTA World': { website: 'verify', x: 'verify', instagram: 'verify', discord: 'Yes' },
+};
+
+/* ================= Seed data ================= */
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function rec(extra) { return Object.assign({ id: uid(), created: TODAY(), updated: TODAY(), stageAt: TODAY(), notes: '' }, extra); }
+
+function seed() {
+  const s = { artworks: [], characters: [], content: [], servers: [], milestones: [], snapshots: [], revenue: [],
+    settings: { postTarget: 12, cfxSubmitted: null }, contentView: 'board', serverView: 'table' };
+
+  s.characters.push(rec({ name: 'Sadie', identity: 'The first named balaclava girl', pose: 'TBD — give her the signature move', backstory: '', signal: 'weak', status: 'concept' }));
+
+  [
+    ['GTA 6 cover girl', 'canon reimagining', 'GTA 6 — green crop top / "Vice Baby" 305 girl', 'in progress'],
+    ['Lucia Caminos', 'canon reimagining', 'GTA 6 female lead — sunset Vice City key art', 'idea'],
+    ['Jason Duval', 'canon reimagining', 'GTA 6 male lead', 'idea'],
+    ['Lucia + Jason lounge scene', 'canon reimagining', 'The Bonnie-and-Clyde couple, relaxed', 'idea'],
+    ['Pool / "Miami Bachelor" scene', 'canon reimagining', 'Vice City girls around a pool', 'idea'],
+    ['Misty (GTA III)', 'canon reimagining', 'Poster-girl lineage #1 — the 2001 original', 'idea'],
+    ['Balaclava girl — Sadie piece', 'original character', 'Rayet IP', 'sketching'],
+  ].forEach(([title, type, subject, status]) => {
+    const a = rec({ title, type, subject, status, image: '' });
+    if (title.includes('Sadie')) a.characterId = s.characters[0].id;
+    s.artworks.push(a);
+  });
+
+  s.servers = [
+    ['NoPixel','celebrity/brand','FiveM','High','Brand/cultural collab. Has in-house dev — lead with art profile, route via Buddha/management.','Koil/Francis (owner+lead dev); xQc & Buddha (25% each)','Warm up on X before outreach'],
+    ['Grizzley World RP','celebrity/brand','FiveM','High','Most culturally aligned. Art collab / merch / cultural drop. Approach via GG Gaming org.','Tee Grizzley (rapper, owner)','Follow + engage @grizzleyganggaming'],
+    ['Living Legends RP','community w/ dev team','FiveM','High','Strong B2B fit — commission/build lots of custom assets. Lead with portfolio.','verify (dev/owner)','Find dev-team contact via Discord'],
+    ['Prodigy RP','community w/ dev team','FiveM','Med-High','Dev team = asset buyers. Pitch custom asset commissions.','verify (dev team)','Join Discord, identify dev lead'],
+    ['New Day RP','community w/ dev team','FiveM','Med-High','Asset commission + custom content. Founder is media-friendly.','Tiberione (founder)','Reach founder Tiberione via X'],
+    ['ONX RP','celebrity/brand','FiveM','Medium','Brand + asset. Streamer presence = visibility if they use your work.','verify','Verify handles; monitor streamers'],
+    ['Lucid City RP','community w/ dev team','FiveM','Medium','Volume asset commissions; big community = exposure.','verify','Join Discord, find content/dev contact'],
+    ['Ignite RP','community w/ dev team','FiveM','Medium','Aesthetic-driven — values custom art highly. Pitch period-accurate assets.','verify','Verify handles; assess style match'],
+    ['CityLife RP','community w/ dev team','FiveM','Low-Med','Volume asset play; lower budget likely.','verify','Verify; low priority'],
+    ['Drill UK RP','community w/ dev team','FiveM','Low-Med','Niche cultural fit; smaller budget. Good for a UK-styled asset set.','verify','Verify handles'],
+    ['Eclipse RP','other','RageMP','Low-Med','RageMP — Cfx escrow does NOT apply. Direct commission only.','verify','Flag: platform mismatch'],
+    ['GTA World','other','RageMP','Low','Visual assets largely irrelevant (text RP). Deprioritise.','verify','Deprioritise'],
+  ].map(([name, ttype, platform, priority, approach, people, next]) =>
+    rec(Object.assign({ name, ttype, platform, priority, approach, people, next, nextDue: '', lastContact: '', status: 'not started' },
+      TOUCHPOINTS[name] || { website: '', x: '', instagram: '', discord: '' })));
+
+  const ms = (phase, title, due) => rec({ phase, title, due, done: false });
+  s.milestones = [
+    ms(1, 'Submit Cfx Marketplace creator application', '2026-07-10'),
+    ms(1, 'Lock the "GTA girl" identity brief', '2026-07-10'),
+    ms(1, 'Build B2B target list of 15–20 servers', '2026-07-17'),
+    ms(1, 'One illustration converted to a game-ready 3D asset', '2026-08-15'),
+    ms(1, 'Posting cadence running (3–5x/week)', '2026-07-31'),
+    ms(2, '≥1 paid B2B commission delivered', '2026-09-30'),
+    ms(2, '≥1 live Cfx marketplace listing', '2026-09-30'),
+    ms(2, 'Original IP introduced publicly', '2026-09-30'),
+    ms(2, 'Product prototype in hand (Paper Chasing)', '2026-09-30'),
+    ms(3, '≥1 deal signed', '2026-10-31'),
+    ms(3, 'Product line finalised', '2026-10-31'),
+    ms(3, 'Asset inventory stocked', '2026-10-31'),
+    ms(3, 'Launch-week content plan ready', '2026-10-31'),
+    ms(4, 'Launch week: content, products, deals & assets live', '2026-11-19'),
+  ];
+  s.milestones[2].done = true; // target list exists — the CRM below is it
+
+  s.snapshots = [{ id: uid(), date: TODAY(), ig: 8000, x: 0, tiktok: 0, yt: 0, revenue: 0 }];
+  return s;
+}
+
+/* ================= State ================= */
+let S = load();
+let undoStack = null, toastTimer = null;
+let currentView = 'home';
+let calMonth = TODAY().slice(0, 7);
+
+function load() {
+  try {
+    const r = localStorage.getItem(KEY);
+    if (r) {
+      const d = JSON.parse(r);
+      // migrate: restore touchpoints on server records saved before the Links column existed
+      (d.servers || []).forEach(s => {
+        if (s.website === undefined) Object.assign(s, TOUCHPOINTS[s.name] || { website: '', x: '', instagram: '', discord: '' });
+      });
+      return d;
+    }
+  } catch (e) {}
+  return seed();
+}
+function persist() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function snapshotUndo(msg) {
+  undoStack = JSON.stringify(S);
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 8000);
+}
+function undo() {
+  if (undoStack) { S = JSON.parse(undoStack); undoStack = null; persist(); render(); }
+  document.getElementById('toast').classList.remove('show');
+}
+
+/* ================= Helpers ================= */
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
+const daysIn = r => daysBetween(r.stageAt || r.created, TODAY());
+const fmtDay = d => d ? new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+const byId = (list, id) => list.find(x => x.id === id);
+function currentPhase() {
+  const t = TODAY();
+  return PHASES.find(p => t >= p.from && t <= p.to) || (t < PHASES[0].from ? PHASES[0] : PHASES[3]);
+}
+
+/* ================= Navigation ================= */
+const VIEWS = [
+  ['home', 'home', 'Home'], ['artworks', 'image', 'Artworks'], ['characters', 'user', 'Characters'],
+  ['content', 'calendar', 'Content'], ['servers', 'server', 'Servers'], ['runway', 'flag', 'Runway'], ['snapshots', 'chart', 'Snapshots'],
+];
+function nav(v) { currentView = v; render(); }
+function renderNav() {
+  document.getElementById('navTabs').innerHTML = VIEWS.map(([v,, label]) =>
+    `<button class="tab ${v === currentView ? 'is-active' : ''}" onclick="nav('${v}')">${label}</button>`).join('');
+  VIEWS.forEach(([v]) => document.getElementById('view-' + v).classList.toggle('on', v === currentView));
+}
+
+/* ================= Stage advance (the core action) ================= */
+function advance(kind, id) {
+  const list = S[kind + 's'] || S[kind];
+  const r = byId(list, id);
+  const stages = STAGES[kind];
+  const i = stages.indexOf(r.status);
+  if (i < 0 || i >= stages.length - 1) return;
+  snapshotUndo(`${r.title || r.name} → ${stages[i + 1]}`);
+  r.status = stages[i + 1];
+  r.stageAt = TODAY(); r.updated = TODAY();
+  if (kind === 'content' && r.status === 'posted' && !r.postedDate) r.postedDate = TODAY();
+  persist(); render();
+  if (kind === 'artwork' && r.status === 'finished') offerSpawn(r);
+  if (kind === 'character' && r.status === 'audience-validated') offerValidated(r);
+}
+
+/* Artwork → content spawner */
+function offerSpawn(a) {
+  openModal(`
+    <h2>${ic('star', 17)} "${esc(a.title)}" is finished</h2>
+    <p class="small muted" style="margin-bottom:14px">One artwork → many posts. Generate the ${SPAWN_STUBS.length} content stubs, pre-tagged and ready to schedule?</p>
+    <ul class="checklist">${SPAWN_STUBS.map(([t, f]) => `<li><span class="num">＋</span><span><b>${t}</b> <span class="muted small">· ${f}</span></span></li>`).join('')}</ul>
+    <div class="modal-actions"><div class="right">
+      <button class="btn ghost" onclick="closeModal()">Not now</button>
+      <button class="btn primary" onclick="spawnContent('${a.id}')">Generate ${SPAWN_STUBS.length} stubs</button>
+    </div></div>`);
+}
+function spawnContent(artworkId) {
+  const a = byId(S.artworks, artworkId);
+  snapshotUndo(`Spawned ${SPAWN_STUBS.length} posts from "${a.title}"`);
+  SPAWN_STUBS.forEach(([t, format]) => S.content.push(rec({
+    title: `${t} — ${a.title}`, format, platform: 'Instagram', status: 'idea',
+    artworkId, characterId: a.characterId || '', scheduled: '', postedDate: '', verdict: '', learning: '', hot: false,
+  })));
+  persist(); closeModal(); currentView = 'content'; render();
+}
+
+function offerValidated(c) {
+  openModal(`
+    <h2>${ic('flame', 17)} ${esc(c.name)} is audience-validated</h2>
+    <p class="small muted" style="margin-bottom:14px">That's the flywheel go-signal. Start her 2D→3D pipeline now — log the 3D model as an artwork so the process becomes content.</p>
+    <div class="modal-actions"><div class="right">
+      <button class="btn ghost" onclick="closeModal()">Later</button>
+      <button class="btn primary" onclick="spawn3D('${c.id}')">Create "3D model" record</button>
+    </div></div>`);
+}
+function spawn3D(charId) {
+  const c = byId(S.characters, charId);
+  snapshotUndo(`3D pipeline started for ${c.name}`);
+  S.artworks.push(rec({ title: `${c.name} — 3D model`, type: 'original character', subject: 'Rayet IP · 2D→3D pipeline', status: 'idea', characterId: c.id, image: '' }));
+  persist(); closeModal(); currentView = 'artworks'; render();
+}
+
+/* ================= Home ================= */
+function renderHome() {
+  const t = TODAY();
+  const days = daysBetween(t, LAUNCH);
+  const ph = currentPhase();
+  document.getElementById('daysLeft').innerHTML = `${days} <span>days to launch</span>`;
+  document.getElementById('phasePill').textContent = `Phase ${ph.n} — ${ph.name}`;
+  document.getElementById('greetSub').textContent = `${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })} · Phase ${ph.n}: ${ph.name}`;
+
+  const next = S.milestones.filter(m => !m.done && m.due >= t).sort((a, b) => a.due.localeCompare(b.due))[0];
+  document.getElementById('nextMilestone').innerHTML = next ? `Next milestone: <b>${esc(next.title)}</b> · ${fmtDay(next.due)}` : 'No upcoming milestones';
+
+  const start = PHASES[0].from, total = daysBetween(start, LAUNCH);
+  document.getElementById('phaseBar').innerHTML = PHASES.map(p =>
+    `<span class="phase-seg" style="flex:${daysBetween(p.from, p.to) + 1};background:${p.color}"><em>P${p.n} ${fmtDay(p.from)}</em></span>`
+  ).join('') + `<span class="today-marker" style="left:${Math.min(99.5, Math.max(0, daysBetween(start, t) / total * 100))}%"></span>`;
+
+  /* Cfx clock */
+  const cfx = S.settings.cfxSubmitted;
+  document.getElementById('cfxClock').innerHTML = cfx ? (() => {
+    const d = daysBetween(cfx, t);
+    const pct = Math.min(100, d / 28 * 100);
+    return `<div class="count-row"><div class="count-big" style="font-size:34px">${d} <span>days in review</span></div></div>
+      <div class="progress" style="max-width:none;margin:12px 0 6px"><i style="width:${pct}%"></i></div>
+      <div class="small muted">2–4 week window · submitted ${fmtDay(cfx)}${d > 28 ? ' · <b style="color:var(--orange)">past the window — chase it</b>' : d >= 14 ? ' · in the approval zone' : ''}</div>`;
+  })() : `<div class="small muted" style="margin-bottom:12px">Application not submitted yet — it's the pacing constraint for everything else. The 2–4 week clock starts when you do.</div>
+    <button class="btn primary" onclick="markCfxSubmitted()">I submitted it today</button>`;
+
+  /* KPIs */
+  const snap = S.snapshots[S.snapshots.length - 1] || {};
+  const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+  const postsThisWeek = S.content.filter(c => c.status === 'posted' && c.postedDate >= weekAgo).length;
+  const monthStart = t.slice(0, 8) + '01';
+  const revMonth = S.revenue.filter(r => r.date >= monthStart).reduce((a, r) => a + (+r.amount || 0), 0);
+  const activeSrv = S.servers.filter(s => !['not started', 'passed'].includes(s.status)).length;
+  const followers = (snap.ig || 0) + (snap.x || 0) + (snap.tiktok || 0) + (snap.yt || 0);
+  document.getElementById('kpiRow').innerHTML = [
+    ['Followers', followers.toLocaleString(), `IG ${(snap.ig||0).toLocaleString()} · X ${(snap.x||0).toLocaleString()} · TT ${(snap.tiktok||0).toLocaleString()} · YT ${(snap.yt||0).toLocaleString()}`],
+    ['Posts this week', `${postsThisWeek} <span style="font-size:14px;color:var(--text-faint)">/ ${S.settings.postTarget}</span>`, 'vs weekly target'],
+    ['Servers in pipeline', activeSrv, `${S.servers.filter(x => x.status === 'won').length} won · ${S.servers.length} total`],
+    ['Revenue this month', '€' + revMonth.toLocaleString(), 'from the revenue log'],
+  ].map(([l, v, sub]) => `<div class="kpi"><div class="k-label">${l}</div><div class="k-value">${v}</div><div class="k-sub">${sub}</div></div>`).join('');
+
+  /* Needs attention */
+  const attn = [];
+  S.content.filter(c => c.hot).forEach(c =>
+    attn.push({ hot: true, txt: `${ic('flame', 14)} "${esc(c.title)}" is blowing up — deploy the origin story <b>today</b>`, act: `openOrigin()`, btn: 'Checklist' }));
+  S.servers.filter(s => s.nextDue && s.nextDue < t && !['won', 'passed'].includes(s.status)).forEach(s =>
+    attn.push({ txt: `Overdue: <b>${esc(s.name)}</b> — ${esc(s.next)}`, act: `openForm('server','${s.id}')`, btn: 'Open' }));
+  ['artwork', 'content', 'server'].forEach(kind => {
+    const list = kind === 'artwork' ? S.artworks : kind === 'content' ? S.content : S.servers;
+    const terminal = { artwork: 'finished', content: 'posted', server: 'won' };
+    list.filter(r => daysIn(r) > STUCK_DAYS && r.status !== terminal[kind] && r.status !== 'passed' && r.status !== 'not started' && r.status !== 'idea')
+      .slice(0, 3).forEach(r =>
+        attn.push({ txt: `Stuck ${daysIn(r)}d in <b>${esc(r.status)}</b>: ${esc(r.title || r.name)}`, act: kind === 'server' ? `openForm('server','${r.id}')` : `nav('${kind}s')`, btn: 'Go' }));
+  });
+  const lastSnap = S.snapshots[S.snapshots.length - 1];
+  if (!lastSnap || daysBetween(lastSnap.date, t) >= 7)
+    attn.push({ txt: 'Weekly snapshot due — 2 minutes, keeps the KPIs honest', act: `openForm('snapshot')`, btn: 'Log it' });
+  if (!S.settings.cfxSubmitted)
+    attn.push({ txt: 'Cfx application not submitted — <b>this is action #1</b>', act: `nav('runway')`, btn: 'Runway' });
+  document.getElementById('attnList').innerHTML = attn.length
+    ? attn.slice(0, 6).map(a => `<div class="attn-item ${a.hot ? 'hot' : ''}"><span>${a.txt}</span><button class="go" onclick="${a.act}">${a.btn}</button></div>`).join('')
+    : '<div class="empty-note">Nothing stuck, nothing overdue. Go draw.</div>';
+
+  /* This week */
+  const soon = new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10);
+  const due = S.milestones.filter(m => !m.done && m.due <= soon).sort((a, b) => a.due.localeCompare(b.due));
+  document.getElementById('weekCount').textContent = due.length + ' due';
+  document.getElementById('weekList').innerHTML = due.length
+    ? due.map(m => `<div class="attn-item"><span>${m.due < t ? `<span style="color:var(--orange)">${ic('alert', 13)}</span> ` : ''}${esc(m.title)}</span><span class="small muted" style="flex-shrink:0">${fmtDay(m.due)}</span></div>`).join('')
+    : '<div class="empty-note">Nothing due in the next two weeks.</div>';
+
+  document.getElementById('quickRow').innerHTML = [
+    ['image', 'New artwork', `openForm('artwork')`], ['calendar', 'Log a post', `openForm('content')`],
+    ['server', 'New server', `openForm('server')`], ['user', 'New character', `openForm('character')`],
+    ['banknote', 'Log revenue', `openForm('revenue')`], ['chart', 'Snapshot', `openForm('snapshot')`],
+  ].map(([i, l, a]) => `<button class="quick-btn" onclick="${a}">${ic(i, 14)} ${l}</button>`).join('');
+}
+function markCfxSubmitted() {
+  snapshotUndo('Cfx application marked submitted');
+  S.settings.cfxSubmitted = TODAY();
+  const m = S.milestones.find(m => m.title.startsWith('Submit Cfx')); if (m) m.done = true;
+  persist(); render();
+}
+
+/* Origin-story checklist */
+function openOrigin() {
+  openModal(`
+    <h2>${ic('flame', 17)} Deploy the origin story — today</h2>
+    <p class="small muted" style="margin-bottom:12px">A post is popping. Fire the pre-made origin content while the room is watching. The beats:</p>
+    <ul class="checklist">${ORIGIN_BEATS.map(([t, d], i) => `<li><span class="num">${i + 1}</span><span><b>${t}</b> — ${d}</span></li>`).join('')}</ul>
+    <p class="small muted" style="margin-top:10px">One capture, four destinations: YouTube Short, IG Reel, TikTok, pinned X thread.</p>
+    <div class="modal-actions"><div class="right">
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+      <button class="btn primary" onclick="closeModal();openForm('content')">Log the origin post</button>
+    </div></div>`);
+}
+
+/* ================= Boards ================= */
+function boardHTML(kind, items, cardFn) {
+  return STAGES[kind].map(st => {
+    const rows = items.filter(r => r.status === st);
+    return `<div class="bcol"><h3>${st} <span class="cnt">${rows.length}</span></h3>${rows.map(cardFn).join('')}</div>`;
+  }).join('');
+}
+
+function renderArtworks() {
+  const q = document.getElementById('artSearch').value.toLowerCase();
+  const ft = document.getElementById('artType').value;
+  const items = S.artworks.filter(a => (!ft || a.type === ft) && (!q || (a.title + a.subject).toLowerCase().includes(q)));
+  document.getElementById('artBoard').innerHTML = boardHTML('artwork', items, a => {
+    const ch = a.characterId && byId(S.characters, a.characterId);
+    const last = a.status === STAGES.artwork[3];
+    return `<div class="bcard" onclick="openForm('artwork','${a.id}')">
+      <div class="thumb" style="color:var(--olive)">${a.image ? `<img src="${esc(a.image)}" alt="">` : ic('image', 26)}</div>
+      <div class="t">${esc(a.title)}</div>
+      <div class="m"><span class="pill ${a.type === 'original character' ? 'lime' : 'soft'}">${esc(a.type)}</span>${ch ? `<span class="pill blue">${esc(ch.name)}</span>` : ''}</div>
+      <div class="bcard-foot"><span class="days">${daysIn(a)}d in stage</span>
+        ${last ? `<button class="adv" onclick="event.stopPropagation();offerSpawn(S.artworks.find(x=>x.id==='${a.id}'))">${ic('star', 13)} Spawn</button>` : `<button class="adv" onclick="event.stopPropagation();advance('artwork','${a.id}')">Advance ›</button>`}
+      </div></div>`;
+  });
+}
+
+function renderCharacters() {
+  document.getElementById('charGallery').innerHTML = S.characters.map(c => {
+    const arts = S.artworks.filter(a => a.characterId === c.id).length;
+    const last = c.status === STAGES.character[STAGES.character.length - 1];
+    return `<div class="gcard" onclick="openForm('character','${c.id}')">
+      <div class="portrait" style="color:var(--olive)">${c.image ? `<img src="${esc(c.image)}" alt="">` : ic('user', 36)}</div>
+      <h4>${esc(c.name)}</h4>
+      <p>${esc(c.identity || '')}</p>
+      <div class="m" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span class="pill ${c.status === 'audience-validated' ? 'lime' : 'soft'}">${esc(c.status)}</span>
+        <span class="pill grey">signal: ${esc(c.signal || 'weak')}</span>
+        ${arts ? `<span class="pill blue">${arts} artwork${arts > 1 ? 's' : ''}</span>` : ''}
+      </div>
+      ${!last ? `<div style="margin-top:10px"><button class="adv" onclick="event.stopPropagation();advance('character','${c.id}')">Advance ›</button></div>` : ''}
+    </div>`;
+  }).join('') || '<div class="empty-note">No characters yet.</div>';
+}
+
+function setContentView(v) { S.contentView = v; persist(); render(); }
+function renderContent() {
+  const isCal = S.contentView === 'calendar';
+  document.getElementById('cvBoard').classList.toggle('on', !isCal);
+  document.getElementById('cvCal').classList.toggle('on', isCal);
+  document.getElementById('contentBoard').style.display = isCal ? 'none' : 'flex';
+  document.getElementById('contentCal').style.display = isCal ? 'block' : 'none';
+  const fp = document.getElementById('contentPlatform').value;
+  const items = S.content.filter(c => !fp || c.platform === fp);
+
+  if (!isCal) {
+    document.getElementById('contentBoard').innerHTML = boardHTML('content', items, c => {
+      const a = c.artworkId && byId(S.artworks, c.artworkId);
+      const posted = c.status === 'posted';
+      return `<div class="bcard" onclick="openForm('content','${c.id}')">
+        <div class="t">${esc(c.title)}</div>
+        <div class="m"><span class="pill soft">${esc(c.platform)}</span><span class="pill grey">${esc(c.format || '')}</span>
+          ${a ? `<span class="pill blue">${esc(a.title.slice(0, 18))}</span>` : ''}
+          ${c.verdict ? `<span class="pill ${c.verdict === 'works' ? 'lime' : c.verdict === 'flops' ? 'red' : 'grey'}">${c.verdict}</span>` : ''}
+        </div>
+        <div class="bcard-foot"><span class="days">${c.scheduled ? ic('calendar', 11) + ' ' + fmtDay(c.scheduled) : daysIn(c) + 'd'}</span>
+          ${posted ? `<button class="adv" style="${c.hot ? 'background:var(--lime)' : ''}" onclick="event.stopPropagation();toggleHot('${c.id}')">${ic('flame', 13)}${c.hot ? ' popping' : ''}</button>`
+                   : `<button class="adv" onclick="event.stopPropagation();advance('content','${c.id}')">Advance ›</button>`}
+        </div></div>`;
+    });
+  } else {
+    renderCalendar(items);
+  }
+}
+function toggleHot(id) {
+  const c = byId(S.content, id);
+  snapshotUndo(c.hot ? 'Unmarked as popping' : `"${c.title}" marked as popping — origin story time`);
+  c.hot = !c.hot; persist(); render();
+  if (c.hot) openOrigin();
+}
+function calShift(n) {
+  const [y, m] = calMonth.split('-').map(Number);
+  const d = new Date(y, m - 1 + n, 1);
+  calMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  render();
+}
+function renderCalendar(items) {
+  const [y, m] = calMonth.split('-').map(Number);
+  const first = new Date(y, m - 1, 1);
+  document.getElementById('calTitle').textContent = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const startDow = (first.getDay() + 6) % 7;
+  const dim = new Date(y, m, 0).getDate();
+  let cells = '<div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div><div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>';
+  for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell other"></div>';
+  for (let d = 1; d <= dim; d++) {
+    const iso = `${calMonth}-${String(d).padStart(2, '0')}`;
+    const day = items.filter(c => (c.status === 'posted' ? c.postedDate : c.scheduled) === iso);
+    cells += `<div class="cal-cell ${iso === TODAY() ? 'today' : ''}"><div class="dnum">${d}</div>` +
+      day.map(c => `<div class="cal-item ${c.status === 'posted' ? 'posted' : ''}" onclick="openForm('content','${c.id}')">${esc(c.title.slice(0, 22))}</div>`).join('') + '</div>';
+  }
+  document.getElementById('calGrid').innerHTML = cells;
+}
+
+function setServerView(v) { S.serverView = v; persist(); render(); }
+function renderServers() {
+  const isBoard = S.serverView === 'board';
+  document.getElementById('svBoard').classList.toggle('on', isBoard);
+  document.getElementById('svTable').classList.toggle('on', !isBoard);
+  document.getElementById('srvBoard').style.display = isBoard ? 'flex' : 'none';
+  document.getElementById('srvTableWrap').style.display = isBoard ? 'none' : 'block';
+  const q = document.getElementById('srvSearch').value.toLowerCase();
+  const fp = document.getElementById('srvPriority').value;
+  const items = S.servers.filter(s => (!fp || s.priority === fp) && (!q || (s.name + s.people + s.approach).toLowerCase().includes(q)));
+
+  if (isBoard) {
+    document.getElementById('srvBoard').innerHTML = boardHTML('server', items, s => `
+      <div class="bcard" onclick="openForm('server','${s.id}')">
+        <div class="t">${esc(s.name)}</div>
+        <div class="m"><span class="pill ${s.priority === 'High' ? 'orange' : s.priority.startsWith('Med') ? 'soft' : 'grey'}">${esc(s.priority)}</span><span class="pill grey">${esc(s.ttype)}</span></div>
+        <div class="small muted" style="margin-top:6px">${esc(s.next || '')}</div>
+        <div class="bcard-foot"><span class="days">${daysIn(s)}d in stage</span>
+          ${s.status !== 'won' && s.status !== 'passed' ? `<button class="adv" onclick="event.stopPropagation();advance('server','${s.id}')">Advance ›</button>` : ''}
+        </div></div>`);
+  } else {
+    const RANK = { 'High': 0, 'Med-High': 1, 'Medium': 2, 'Low-Med': 3, 'Low': 4 };
+    const sorted = [...items].sort((a, b) => (RANK[a.priority] ?? 9) - (RANK[b.priority] ?? 9) || a.name.localeCompare(b.name));
+    document.getElementById('srvTbody').innerHTML = sorted.map(s => {
+      const overdue = s.nextDue && s.nextDue < TODAY() && !['won', 'passed'].includes(s.status);
+      return `
+      <tr>
+        <td><div class="srv-cell">
+          <span class="avatar-tile">${esc(initials(s.name))}</span>
+          <div><span class="rowlink" onclick="openForm('server','${s.id}')">${esc(s.name)}</span>
+          <div class="small muted">${esc(s.ttype)} · ${esc(s.platform)}</div></div>
+        </div></td>
+        <td><span class="pill ${s.priority === 'High' ? 'orange' : s.priority.startsWith('Med') ? 'soft' : 'grey'}">${esc(s.priority)}</span></td>
+        <td style="max-width:280px" class="small">${esc(s.approach)}</td>
+        <td>${linkChips(s)}</td>
+        <td><select onchange="setServerStatus('${s.id}', this.value)">${STAGES.server.map(x => `<option ${x === s.status ? 'selected' : ''}>${x}</option>`).join('')}</select>
+          <div class="stage-days">${daysIn(s)}d in stage</div></td>
+        <td class="small">${esc(s.next || '')}
+          <div class="due-line ${overdue ? 'overdue' : ''}">${s.nextDue ? (overdue ? 'overdue · ' : 'due ') + fmtDay(s.nextDue) : 'no due date'}</div></td>
+        <td><button class="iconbtn-sm" onclick="openForm('server','${s.id}')" title="Edit" aria-label="Edit ${esc(s.name)}">${ic('pencil', 14)}</button></td>
+      </tr>`;
+    }).join('');
+  }
+}
+function initials(name) {
+  return name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
+function linkChips(s) {
+  const chips = [];
+  const add = (val, icon, kind, title) => {
+    if (!val) return;
+    if (val === 'verify') { chips.push(`<span class="lchip verify" title="${title}: needs verifying">verify</span>`); return; }
+    let url = val;
+    if (kind === 'x') url = 'https://x.com/' + val.replace(/^@/, '');
+    else if (kind === 'ig' && val.startsWith('@')) url = 'https://instagram.com/' + val.replace(/^@/, '');
+    else if (!/^https?:/.test(val)) url = 'https://' + val;
+    if (kind === 'discord' && !/discord|\./.test(val)) { chips.push(`<span class="lchip" title="Discord: ${esc(val)}">${ic(icon, 13)}</span>`); return; }
+    chips.push(`<a class="lchip" href="${esc(url)}" target="_blank" rel="noopener" title="${title}: ${esc(val)}">${ic(icon, 13)}</a>`);
+  };
+  add(s.website, 'globe', 'web', 'Website');
+  add(s.x, 'xlogo', 'x', 'X');
+  add(s.instagram, 'instagram', 'ig', 'Instagram');
+  add(s.discord, 'chat', 'discord', 'Discord');
+  return `<div class="linkchips">${chips.join('') || '<span class="small muted">—</span>'}</div>`;
+}
+function setServerStatus(id, v) {
+  const s = byId(S.servers, id);
+  snapshotUndo(`${s.name} → ${v}`);
+  s.status = v; s.stageAt = TODAY(); s.updated = TODAY();
+  persist(); render();
+}
+
+/* ================= Runway ================= */
+const DONE_WHEN = {
+  1: 'identity locked · posting cadence running · Cfx application submitted · 1 game-ready asset · target list built',
+  2: '≥1 paid B2B commission delivered · ≥1 live Cfx listing · original IP introduced publicly · product prototype in hand',
+  3: '≥1 deal signed · product line finalised · asset inventory stocked · launch content planned',
+  4: 'enter launch week with product, deals, and assets live',
+};
+function renderRunway() {
+  const t = TODAY();
+  document.getElementById('runwayPhases').innerHTML = PHASES.map(p => {
+    const ms = S.milestones.filter(m => m.phase === p.n);
+    const done = ms.filter(m => m.done).length;
+    const active = t >= p.from && t <= p.to;
+    return `<div class="card phase-card ${active ? 'tint' : ''}">
+      <div class="ph-top">
+        <div class="card-title">Phase ${p.n} — ${p.name} ${active ? '<span class="pill dark">now</span>' : ''}</div>
+        <span class="small muted">${fmtDay(p.from)} → ${fmtDay(p.to)}</span>
+        <div class="progress"><i style="width:${ms.length ? done / ms.length * 100 : 0}%"></i></div>
+        <span class="small muted">${done}/${ms.length}</span>
+      </div>
+      <div class="small muted" style="margin-bottom:8px"><b>Done when:</b> ${DONE_WHEN[p.n]}</div>
+      ${ms.map(m => `<div class="ms-row">
+        <button class="ms-check ${m.done ? 'done' : ''}" onclick="toggleMs('${m.id}')" aria-label="toggle">${m.done ? '✓' : ''}</button>
+        <span style="${m.done ? 'text-decoration:line-through;color:var(--text-faint)' : ''}">${esc(m.title)}</span>
+        <span class="due ${!m.done && m.due < t ? 'overdue' : ''}">${fmtDay(m.due)}</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function toggleMs(id) {
+  const m = byId(S.milestones, id);
+  snapshotUndo(`${m.done ? 'Reopened' : 'Completed'}: ${m.title}`);
+  m.done = !m.done; persist(); render();
+}
+
+/* ================= Snapshots & revenue ================= */
+function renderSnapshots() {
+  document.getElementById('snapTbody').innerHTML = [...S.snapshots].reverse().map(s =>
+    `<tr><td>${fmtDay(s.date)}</td><td>${(s.ig||0).toLocaleString()}</td><td>${(s.x||0).toLocaleString()}</td><td>${(s.tiktok||0).toLocaleString()}</td><td>${(s.yt||0).toLocaleString()}</td><td>€${(s.revenue||0).toLocaleString()}</td></tr>`).join('')
+    || '<tr><td colspan="6" class="muted">No snapshots yet.</td></tr>';
+  document.getElementById('revTbody').innerHTML = [...S.revenue].reverse().map(r =>
+    `<tr><td>${fmtDay(r.date)}</td><td><span class="pill soft">${esc(r.source)}</span></td><td>${esc(r.what || '')}</td><td style="text-align:right">€${(+r.amount||0).toLocaleString()}</td></tr>`).join('')
+    || '<tr><td colspan="4" class="muted">No revenue logged yet — it’s coming.</td></tr>';
+  document.getElementById('setTarget').value = S.settings.postTarget;
+  document.getElementById('setCfx').value = S.settings.cfxSubmitted || '';
+}
+function saveSetting(k, v) { snapshotUndo('Setting updated'); S.settings[k] = v; persist(); render(); }
+
+/* ================= Forms (add / edit) ================= */
+const FORM_DEFS = {
+  artwork: {
+    title: 'Artwork', list: () => S.artworks,
+    fields: [
+      ['title', 'Title', 'text'], ['type', 'Type', 'select', ['canon reimagining', 'original character', 'other']],
+      ['subject', 'Subject (which girl / protagonist / city)', 'text', null, 'full'],
+      ['status', 'Stage', 'select', STAGES.artwork],
+      ['characterId', 'Linked character (Rayet IP)', 'charsel'],
+      ['image', 'Image URL (optional)', 'text', null, 'full'],
+      ['source', 'Source file link (Adobe / storage)', 'text', null, 'full'],
+      ['notes', 'Notes', 'textarea', null, 'full'],
+    ],
+  },
+  character: {
+    title: 'Character', list: () => S.characters,
+    fields: [
+      ['name', 'Name', 'text'], ['status', 'Stage', 'select', STAGES.character],
+      ['identity', 'One-line identity', 'text', null, 'full'],
+      ['pose', 'Signature pose / motif', 'text', null, 'full'],
+      ['signal', 'Audience signal', 'select', ['weak', 'warm', 'validated']],
+      ['image', 'Portrait URL (optional)', 'text'],
+      ['backstory', 'Backstory', 'textarea', null, 'full'],
+      ['notes', 'Notes', 'textarea', null, 'full'],
+    ],
+  },
+  content: {
+    title: 'Content item', list: () => S.content,
+    fields: [
+      ['title', 'Title / hook line', 'text', null, 'full'],
+      ['platform', 'Platform', 'select', PLATFORMS], ['format', 'Format', 'select', FORMATS],
+      ['status', 'Stage', 'select', STAGES.content],
+      ['artworkId', 'Source artwork', 'artsel'],
+      ['scheduled', 'Scheduled date', 'date'], ['postedDate', 'Posted date', 'date'],
+      ['likes', 'Likes', 'number'], ['views', 'Views', 'number'],
+      ['verdict', 'Verdict (vs your baseline)', 'select', VERDICTS],
+      ['link', 'Live post link', 'text'],
+      ['learning', 'One-line learning', 'text', null, 'full'],
+      ['notes', 'Notes', 'textarea', null, 'full'],
+    ],
+  },
+  server: {
+    title: 'Server / partner', list: () => S.servers,
+    fields: [
+      ['name', 'Server name', 'text'], ['ttype', 'Target type', 'select', ['celebrity/brand', 'community w/ dev team', 'other']],
+      ['platform', 'Platform', 'select', ['FiveM', 'RageMP', 'other']], ['priority', 'Priority', 'select', ['High', 'Med-High', 'Medium', 'Low-Med', 'Low']],
+      ['status', 'Stage', 'select', STAGES.server], ['lastContact', 'Last contact', 'date'],
+      ['people', 'Key people', 'text', null, 'full'],
+      ['website', 'Website', 'text'], ['x', 'X handle', 'text'],
+      ['instagram', 'Instagram', 'text'], ['discord', 'Discord', 'text'],
+      ['approach', 'Approach angle', 'textarea', null, 'full'],
+      ['next', 'Next action', 'text'], ['nextDue', 'Next action due', 'date'],
+      ['notes', 'Notes', 'textarea', null, 'full'],
+    ],
+  },
+  snapshot: {
+    title: 'Snapshot', list: () => S.snapshots,
+    fields: [
+      ['date', 'Date', 'date'], ['ig', 'Instagram followers', 'number'], ['x', 'X followers', 'number'],
+      ['tiktok', 'TikTok followers', 'number'], ['yt', 'YouTube subs', 'number'], ['revenue', 'Revenue month-to-date (€)', 'number'],
+    ],
+  },
+  revenue: {
+    title: 'Revenue', list: () => S.revenue,
+    fields: [
+      ['date', 'Date', 'date'], ['source', 'Source', 'select', REV_SOURCES],
+      ['what', 'What was it', 'text', null, 'full'], ['amount', 'Amount (€)', 'number'],
+    ],
+  },
+};
+
+let formKind = null, formId = null;
+function openForm(kind, id) {
+  formKind = kind; formId = id || null;
+  const def = FORM_DEFS[kind];
+  const r = id ? byId(def.list(), id) : { date: TODAY(), status: STAGES[kind] ? STAGES[kind][0] : undefined, priority: 'Medium', platform: kind === 'content' ? 'Instagram' : 'FiveM', type: 'canon reimagining', ttype: 'community w/ dev team', source: kind === 'revenue' ? 'commission' : '', signal: 'weak' };
+  const fieldHTML = def.fields.map(([k, label, type, opts, span]) => {
+    const v = r[k] != null ? r[k] : '';
+    let input;
+    if (type === 'select') input = `<select id="f_${k}">${opts.map(o => `<option value="${esc(o)}" ${o === v ? 'selected' : ''}>${o || '—'}</option>`).join('')}</select>`;
+    else if (type === 'textarea') input = `<textarea id="f_${k}">${esc(v)}</textarea>`;
+    else if (type === 'charsel') input = `<select id="f_${k}"><option value="">— none —</option>${S.characters.map(c => `<option value="${c.id}" ${c.id === v ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+    else if (type === 'artsel') input = `<select id="f_${k}"><option value="">— none —</option>${S.artworks.map(a => `<option value="${a.id}" ${a.id === v ? 'selected' : ''}>${esc(a.title)}</option>`).join('')}</select>`;
+    else input = `<input type="${type}" id="f_${k}" value="${esc(v)}" />`;
+    return `<div class="field ${span || ''}"><label>${label}</label>${input}</div>`;
+  }).join('');
+
+  let linked = '';
+  if (id && kind === 'artwork') {
+    const posts = S.content.filter(c => c.artworkId === id);
+    linked = `<div class="linked"><h5>Derived content (${posts.length})</h5>${posts.map(c => `<span class="lk" onclick="openForm('content','${c.id}')">${esc(c.title.slice(0, 32))}</span>`).join('') || '<span class="small muted">None yet — finish it and spawn.</span>'}</div>`;
+  }
+  if (id && kind === 'character') {
+    const arts = S.artworks.filter(a => a.characterId === id);
+    linked = `<div class="linked"><h5>Linked artworks (${arts.length})</h5>${arts.map(a => `<span class="lk" onclick="openForm('artwork','${a.id}')">${esc(a.title)}</span>`).join('') || '<span class="small muted">None yet.</span>'}</div>`;
+  }
+
+  openModal(`
+    <h2>${id ? 'Edit' : 'New'} ${def.title.toLowerCase()}</h2>
+    <div class="grid2">${fieldHTML}</div>
+    ${linked}
+    <div class="modal-actions">
+      ${id ? `<button class="btn danger" onclick="deleteRec()">Delete</button>` : ''}
+      <div class="right">
+        <button class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn primary" onclick="saveForm()">Save</button>
+      </div>
+    </div>`);
+}
+function saveForm() {
+  const def = FORM_DEFS[formKind];
+  const list = def.list();
+  snapshotUndo(formId ? 'Record updated' : 'Record added');
+  let r = formId ? byId(list, formId) : rec({});
+  const oldStatus = r.status;
+  def.fields.forEach(([k,, type]) => {
+    const el = document.getElementById('f_' + k);
+    if (!el) return;
+    r[k] = type === 'number' ? (+el.value || 0) : el.value;
+  });
+  r.updated = TODAY();
+  if (r.status && r.status !== oldStatus) r.stageAt = TODAY();
+  if (!formId) list.push(r);
+  persist(); closeModal(); render();
+  if (formKind === 'artwork' && r.status === 'finished' && oldStatus !== 'finished') offerSpawn(r);
+}
+function deleteRec() {
+  const def = FORM_DEFS[formKind];
+  const list = def.list();
+  const r = byId(list, formId);
+  snapshotUndo(`Deleted ${r.title || r.name || def.title} — undo?`);
+  list.splice(list.indexOf(r), 1);
+  persist(); closeModal(); render();
+}
+
+function openQuickAdd() {
+  openModal(`
+    <h2>Quick add</h2>
+    <div class="quick-row">${[
+      ['image', 'Artwork', 'artwork'], ['calendar', 'Post', 'content'], ['server', 'Server', 'server'],
+      ['user', 'Character', 'character'], ['banknote', 'Revenue', 'revenue'], ['chart', 'Snapshot', 'snapshot'],
+    ].map(([i, l, k]) => `<button class="quick-btn" onclick="openForm('${k}')">${ic(i, 14)} ${l}</button>`).join('')}</div>
+    <div class="modal-actions"><div class="right"><button class="btn ghost" onclick="closeModal()">Cancel</button></div></div>`);
+}
+
+/* ================= Modal plumbing ================= */
+function openModal(html) {
+  document.getElementById('modalBox').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') closeModal(); });
+
+/* ================= Export / import ================= */
+function exportJSON() {
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(S, null, 2));
+  a.download = `gta-girl-command-centre-${TODAY()}.json`;
+  a.click();
+}
+function importJSON(input) {
+  const f = input.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const d = JSON.parse(rd.result);
+      if (!d.artworks || !d.servers) throw new Error('Not a command-centre export');
+      snapshotUndo('Imported data — undo restores what you had');
+      S = d; persist(); render();
+    } catch (e) { alert('Import failed: ' + e.message); }
+  };
+  rd.readAsText(f);
+  input.value = '';
+}
+
+/* ================= Render root ================= */
+function render() {
+  renderNav();
+  if (currentView === 'home') renderHome();
+  if (currentView === 'artworks') renderArtworks();
+  if (currentView === 'characters') renderCharacters();
+  if (currentView === 'content') renderContent();
+  if (currentView === 'servers') renderServers();
+  if (currentView === 'runway') renderRunway();
+  if (currentView === 'snapshots') renderSnapshots();
+}
+render();
+</script>
+</body>
+</html>
